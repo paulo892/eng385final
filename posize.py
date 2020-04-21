@@ -4,7 +4,39 @@ import spacy
 import ast
 import copy 
 import math
+from collections import Counter
 import matplotlib.pyplot as plt
+
+def roundy(dic):
+	# truncates each of the proportions to hundredths place
+	trunc = copy.deepcopy(dic)
+	for key in trunc:
+		trunc[key] = math.trunc(trunc[key] * 100) / 100
+
+	# sums the values and subtracts from 1
+	diff = (1 - sum(trunc.values()))
+
+	# rounds the difference off
+	diff = math.trunc(round(diff * 100)) / 100
+
+	rem = int(diff * 100)
+	for key in trunc:
+		trunc[key] = trunc[key] * 100
+
+	# while int > 0...
+	while (rem > 0):
+		# for each key, in sorted order...
+		for key in sorted(trunc.items(), key=lambda x: x[1]):
+			if (rem == 0):
+				break
+			# distribute sliver of proportion to the app. key
+			trunc[key[0]] += 1
+			rem -= 1
+
+	for key in trunc:
+		trunc[key] = trunc[key] / 100
+
+	return trunc
 
 def vis_pos(filename, nlp):
 	# opens the document info text file
@@ -38,15 +70,16 @@ def vis_pos(filename, nlp):
 			else:
 				pos_dict[pos] = 1
 
-	# removes punctuation from the dictionary
+	# removes punctuation and spaces from the dictionary
 	del pos_dict['PUNCT']
+	del pos_dict['SPACE']
 
 	# prints the results
 	total = sum(pos_dict.values())
-	print(filename + " word counts:")
-	print("Overall: " + str(total))
-	print("By POS:")
+	print(filename + " POS counts:")
+	print("Total: " + str(total))
 	print(pos_dict)
+	print('\n')
 
 	# creates dictionary of proportions of POS in text
 	pos_prop_dict = copy.deepcopy(pos_dict)
@@ -56,93 +89,101 @@ def vis_pos(filename, nlp):
 	# prints the results
 	print(filename + " POS proportions:")
 	print(pos_prop_dict)
+	print('\n')
 
-	## rounds the proportions using the largest remainder method
+	# rounds the proportions using the largest remainder method
+	trunc = roundy(pos_prop_dict)	
 
-	# truncates each of the proportions to hundredths place
-	trunc = copy.deepcopy(pos_prop_dict)
-	for key in trunc:
-		trunc[key] = math.trunc(trunc[key] * 100) / 100
-
-	# sums the values and subtracts from 1
-	diff = (1 - sum(trunc.values()))
-	print(sum(trunc.values()))
-	print(diff)
-
-	# rounds the difference off
-	diff = math.trunc(round(diff * 100)) / 100
-
-	rem = int(diff * 100)
-	for key in trunc:
-		trunc[key] = trunc[key] * 100
-	print("hello" + str(pos_dict))
-	# while int > 0...
-	while (rem > 0):
-		# for each key, in sorted order...
-		for key in sorted(trunc.items(), key=lambda x: x[1]):
-			print(key)
-			if (rem == 0):
-				break
-			# distribute sliver of proportion to the app. key
-			trunc[key[0]] += 1
-			rem -= 1
-
-	for key in trunc:
-		trunc[key] = trunc[key] / 100
-
-	# print results
-	# prints the results
-	print(filename + " POS proportions (truncated):")
-	print(trunc)
-
-	print("hello" + str(pos_dict))
 	return(pos_dict, trunc)
 
 
-
 def vis_pos_all(nlp):
-	print("Goodbye")
-	# TODO
+	# gets the list of documents
+	docs = [x[0] for x in os.walk("./documents/")][1:]
+	docs = [x.split('/')[-1] for x in docs]
+
+	pos_counts = {}
+
+	# for each document...
+	for doc in docs:
+		# updates overall dict
+		res = vis_pos(doc, nlp)[0]
+		pos_counts = {key: pos_counts.get(key, 0) + res.get(key, 0)
+			for key in set(pos_counts.keys()) | set(res.keys())}
+
+	# prints the results
+	total = sum(pos_counts.values())
+	print("Overall POS counts:")
+	print("Total: " + str(total))
+	print(pos_counts)
+	print('\n')
+
+	# creates dictionary of proportions of POS over all texts
+	pos_prop_dict = copy.deepcopy(pos_counts)
+	for key in pos_prop_dict:
+		pos_prop_dict[key] /= total
+
+	# prints the results
+	print("Overall POS proportions:")
+	print(pos_prop_dict)
+	print('\n')
+
+	# rounds the proportions using the largest remainder method
+	trunc = roundy(pos_prop_dict)
+
+	return (pos_counts, trunc)
+
 
 if __name__ == '__main__':
 	# establishes the argument scheme
 	ap = argparse.ArgumentParser()
-	ap.add_argument("-i", "--input", required=True, help="'full' if want to perform visualization over all documents, name of specific document folder otherwise")
+	ap.add_argument("-d", "--document", required=True, help="name of book folder to be OCR'd; 'full' if all")
+	ap.add_argument('-p', action='store_true', default=False, help="plot results")
 	args = vars(ap.parse_args())
 
 	# initializes the spacy pos model
 	nlp = spacy.load('en_core_web_sm')
 
-	inp = args["input"]
+	inp = args["document"]
 
 	# if the user specifies a doc...
 	if (inp != "full"):
-		# performs the visualization on only that document
+		# performs the calculations on only that document
 		counts, props = vis_pos(inp, nlp)
-		print(counts)
-		print(props)
-
-		# displays the results in a pie chart
-		labels = props.keys()
-		sizes = props.values()
-
-		sort = {k: v for k, v in sorted(props.items(), key=lambda item: item[1], reverse=True)}
-		labels = sort.keys()
-		print(sort)
-		sizes = sort.values()
-		print(sizes)
-		#explode = (0, 0.1, 0, 0)  # only "explode" the 2nd slice (i.e. 'Hogs')
-
-		fig1, ax1 = plt.subplots()
-		ax1.pie(sizes, labels=[str(round(x * 100)) + "%" for x in sizes], labeldistance=1.05)
-		ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-		ax1.legend(labels, loc = "upper right", fontsize=5) 
-		plt.title("Relative percentages of each POS in \n" + inp)
-
-
-		plt.show()
 
 	# else if the user does not specify a doc...
 	elif (inp == "full"):
-		vis_pos_all(nlp)
+		# performs the calculations over all documents
+		counts, props = vis_pos_all(nlp)
+
+	# else, throws an error
+	else:
+		print("ERROR")
+
+	# creates a plot for the data
+	sort = {k: v for k, v in sorted(props.items(), key=lambda item: item[1], reverse=True)}
+	labels = sort.keys()
+	sizes = sort.values()
+
+	fig1, ax1 = plt.subplots()
+	ax1.pie(sizes, labels=[str(round(x * 100)) + "%" for x in sizes], labeldistance=1.05)
+	ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+	ax1.legend(labels, loc = "upper right", fontsize=5) 
+
+	# creates the plot title
+	if (inp == "full"):
+		plt.title("Relative percentages of each POS in all documents")
+	else:
+		plt.title("Relative percentages of each POS in \n" + inp)
+
+	# saves the plot
+	plt.savefig('./figures/posize_' + inp + '.png')
+
+	# if requested, shows the plot
+	if (args["p"]):
+		plt.show(block=True)
+
+	# clears the plot
+	plt.clf()
+
 

@@ -3,7 +3,7 @@ Installation (MacOS):
  - Install English tesseract language -> "sudo port install tesseract-eng"
  - Install spaCy dependencies:
  	- "pip install spacy"
- 	- "python -m spacy download pt_core_news_sm"
+ 	- "python -m spacy download en_core_web_sm"
  - Set up virtual environment:
  	- Download get-pip.py from: https://pip.pypa.io/en/stable/installing/
  	- In the directory with that file, run "python get-pip.py"
@@ -11,25 +11,34 @@ Installation (MacOS):
  	- To enter virtual environment, run "pipenv shell"
  		- From here, should be able to run scripts
 
- Run (textualizer):
- - Enter virtual environment
- - Run "python textualize.py -d <the name of the folder of the children's book to textualize>"
+ Usage:
+ - Adding books:
+ 	- To add a book, create an image for each page of the book and add these images to the "./documents/" directory in a folder labeled with the name of the book
+ 	- Add the metadata for the book to the "document_info.txt"; this includes the number of "content" pages (i.e. pages with relevant text) and a mapping describing the letters on each page
+ 	- Rename each of the pages for the book to "content_<an incrementing count>"; you should be left with, at least, a set of pages of the format "content_1," "content_2," etc., with the number incrementing based on the order of the pages
 
+ - textualize.py:
+ 	- Use: Use models to extract an approximation of the text from some or all of the saved books.
+ 	- Process:
+ 		- Enter virtual environment
+ 		- Run "python textualize.py -d <the name of the folder of the children's book to textualize; "full" if all books in the "./documents" directory are to be newly textualized>"
+	- Output: Textualized document created in "./text" directory, and text printed to console.
 
- Ideas:
- - Breakdown of word types
- - Plot the average difficulty of the words on the page from beginning to end of the book
- - Find a way for it to automatically detect the right letter
- - If we label with the correct label:
- 	- Same thing as above, but across letters
- - Statistics of text overall (readability metrics, num words, other metrics in my thesis)
- - Color analyzer
- - Entity extractor
- - Should be able to use the labeling to separate texts by letter
- - Analyze complexity of the candidate words across the book
- - Extraction of key phrases?
- - Correlations between letters and colors?
- - Assess the reading level of the texts (mhetrick)
- - Something with time?
- - If can extract the letter word:
- 	- total the number of times each word comes up (eomalley)
+ - posize.py:
+ 	- Use: Tag a candidate text with an estimation of its parts of speech, and create visualizations of that data.
+ 	- Note: For a document to be posized, it must first have been textualized!
+ 	- Process:
+ 		- Enter virtual environment
+ 		- Run "python posize.py -p [if you would like the resultant diagram to be displayed] -d <the name of the folder of the children's book to posize; "full" if all books in the "./documents" directory are to be newly posized>"
+ 	- Output: Various statistics (i.e. POS counts, proportions) printed to console, figure saved to "./figures" directory
+
+ - display.py:
+ 	- Use: Display various kinds of figures and visualizations of the data
+ 	- Note: To display the POS pie chart for a document, you must have already run posize.py on that document
+ 	- Note: To display the dependency diagram for a document, you must have already run textualize.py on that document
+ 	- Process:
+ 		- Enter virtual environment
+ 		- Run "python display.py -t <kind of display: "figures" - all pie charts, "deps" - dependency diagram for one document> -d <if -t = "deps", the name of the document for which to display dependencies>"
+ 	- Output:
+ 		- If pie charts requested, a grid of pie charts displaying percentages of POS in each textualized document
+ 		- If dependency graph requested, a dependency graph accessible at 'localhost:5000' (Use your browser to go to that address!)
