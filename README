@@ -1,0 +1,35 @@
+Installation (MacOS):
+ - Install tesseract -> "sudo port install tesseract"
+ - Install English tesseract language -> "sudo port install tesseract-eng"
+ - Install spaCy dependencies:
+ 	- "pip install spacy"
+ 	- "python -m spacy download pt_core_news_sm"
+ - Set up virtual environment:
+ 	- Download get-pip.py from: https://pip.pypa.io/en/stable/installing/
+ 	- In the directory with that file, run "python get-pip.py"
+ 	- In the project directory, run "pip install pipenv"
+ 	- To enter virtual environment, run "pipenv shell"
+ 		- From here, should be able to run scripts
+
+ Run (textualizer):
+ - Enter virtual environment
+ - Run "python textualize.py -d <the name of the folder of the children's book to textualize>"
+
+
+ Ideas:
+ - Breakdown of word types
+ - Plot the average difficulty of the words on the page from beginning to end of the book
+ - Find a way for it to automatically detect the right letter
+ - If we label with the correct label:
+ 	- Same thing as above, but across letters
+ - Statistics of text overall (readability metrics, num words, other metrics in my thesis)
+ - Color analyzer
+ - Entity extractor
+ - Should be able to use the labeling to separate texts by letter
+ - Analyze complexity of the candidate words across the book
+ - Extraction of key phrases?
+ - Correlations between letters and colors?
+ - Assess the reading level of the texts (mhetrick)
+ - Something with time?
+ - If can extract the letter word:
+ 	- total the number of times each word comes up (eomalley)

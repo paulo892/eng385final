@@ -1,0 +1,23 @@
+{
+	"abc_and_the_children_of_many_nations": 
+	{
+		"pgs": 14,
+		"num_to_letters":
+		{
+			1: "A B",
+			2: "C D",
+			3: "E F",
+			4: "G H",
+			5: "I J K",
+			6: "L M",
+			7: "N O",
+			8: "P Q",
+			9: "R S",
+			10: "T U",
+			11: "V W",
+			12: "X Y",
+			13: "Z",
+			14: "Z"
+		}
+	}
+}
