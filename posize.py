@@ -99,7 +99,7 @@ def vis_pos(filename, nlp):
 
 def vis_pos_all(nlp):
 	# gets the list of documents
-	docs = [x[0] for x in os.walk("./documents/")][1:]
+	docs = [x[0] for x in os.walk("./texts/")][1:]
 	docs = [x.split('/')[-1] for x in docs]
 
 	pos_counts = {}

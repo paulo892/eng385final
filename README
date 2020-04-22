@@ -42,3 +42,24 @@ Installation (MacOS):
  	- Output:
  		- If pie charts requested, a grid of pie charts displaying percentages of POS in each textualized document
  		- If dependency graph requested, a dependency graph accessible at 'localhost:5000' (Use your browser to go to that address!)
+
+ - statisticize.py
+ 	- Use: Calculate and display various kinds of statistics for one or all of the documents
+ 	- Note: To display the statistics for a document, you must have already run textualize.py on that document
+ 	- Process:
+ 		- Enter virtual environment
+ 		- Run "python statisticize.py -s [if you'd like to consider semi-colons a sentence-terminating punctuation mark] -d <the name of the folder of the children's book to statisticize; "full" if all books in the "./documents" directory are to be newly statisticized>"
+ 	- Output:
+ 		- A table displaying the relevant metrics automatically launched in the user's default internet browser
+ 	- Note (Metrics Displayed):
+ 		- 'sentences' - number of sentences in the text (approx. [complicated by lack of punctuation in certain cases])
+ 		- 'words' - number of words in the text (approx.)
+ 		- 'syllables' - number of syllables in the text (approx.)
+ 		- 'letters' - number of letters in the text (approx.)
+ 		- 'unique_words' - number of unique words in the text
+ 		- 'ttr' - type-token ratio (i.e. 'unique_words'/'words')
+ 		- 'flesh-adap' - flesch reading ease index (readability index)
+ 		- 'coleman' - Coleman-Liau index (readability index)
+ 		- 'flesch-grade' - Flesch-Kincaid grade level (readability index)
+ 		- 'ari' - Automated Readability Index (readability index)
+ 		- 'alw' - average letters per word
