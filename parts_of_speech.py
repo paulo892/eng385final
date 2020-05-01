@@ -6,6 +6,20 @@ import copy
 import math
 from collections import Counter
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import numpy as np
+import json
+
+COLOR_DICT = {
+	'ADJ': 'b', 'ADP': 'g', 'CCONJ': 'r', 'CONJ': 'c', 
+	'AUX': 'm', 'ADV': 'y', 'DET': 'k', 'INTJ': 'tab:blue', 
+	'NOUN': 'tab:orange', 'NUM': 'tab:green', 
+	'PART': 'tab:purple', 'PRON': 'tab:pink', 
+	'PROPN': 'tab:gray', 'PUNCT': 'darkred', 
+	'SCONJ': 'gold', 'SYM': 'tab:red', 
+	'VERB': 'tab:brown', 'X': 'limegreen', 
+	'SPACE': 'darkslategrey'
+}
 
 def roundy(dic):
 	# truncates each of the proportions to hundredths place
@@ -133,6 +147,83 @@ def vis_pos_all(nlp):
 
 	return (pos_counts, trunc)
 
+def create_plot(props, model):
+	# creates a plot for the data
+	sort = {k: v for k, v in sorted(props.items(), key=lambda item: item[1], reverse=True)}
+	print('efojsfejse')
+	print(sort)
+	labels = sort.keys()
+	sizes = sort.values()
+
+	fig1, ax1 = plt.subplots()
+	ax1.pie(sizes, labels=[str(round(x * 100)) + "%" for x in sizes], colors=[COLOR_DICT[x] for x in labels], labeldistance=1.05)
+	ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+	ax1.legend(labels, loc = "upper right", fontsize=5) 
+
+	# creates the plot title
+	if (inp == "full"):
+		plt.title("Relative percentages of each POS in all documents")
+	else:
+		plt.title("Relative percentages of each POS in \n" + model)
+
+	# saves the plot
+	plt.savefig('./figures/posize_' + model + '.png')
+
+	# clears the plot
+	plt.clf()
+	plt.cla()
+	plt.close()
+
+def display_plot(path):
+	# loads image
+	img = mpimg.imread(path)
+	imgplot = plt.imshow(img)
+	plt.axis('off')
+	plt.show()
+
+
+# TODO - Get this working!
+def display_plots():
+	# gets images
+	images = os.listdir('./figures/')
+	img_count = len(images)
+
+	# adjusts image count
+	if ('posize_each.png' in images):
+		img_count -= 1
+	if ('.DS_Store' in images):
+		img_count -= 1
+
+	# sets parameters
+	fig = plt.figure(figsize=(10, 5))
+	columns = 2
+	rows = np.ceil(img_count / 2)
+
+	for x, i in enumerate(images):
+		if i == 'posize_each.png' or i == '.DS_Store':
+			continue
+		path =  os.path.join("./figures/",i)
+		img = plt.imread(path)
+		fig.add_subplot(rows, columns, x)
+		plt.imshow(img, aspect='auto')
+		plt.axis('off')
+
+	plt.savefig('./figures/posize_each.png')
+	plt.show()
+
+def update_doc(doc, props):
+	## updates document_info.txt with POS proportions
+
+	# opens the document_info.txt file and reads contents
+	contents = None
+	with open("document_info.txt", "r") as jsonFile:
+		contents = json.load(jsonFile)
+
+	# updates the document POSs
+	contents[doc]['POS_props'] = props
+
+	with open("document_info.txt", "w") as jsonFile:
+		json.dump(contents, jsonFile)
 
 if __name__ == '__main__':
 	# establishes the argument scheme
@@ -147,43 +238,62 @@ if __name__ == '__main__':
 	inp = args["document"]
 
 	# if the user specifies a doc...
-	if (inp != "full"):
+	if (inp != "full" and inp != "each"):
 		# performs the calculations on only that document
 		counts, props = vis_pos(inp, nlp)
 
-	# else if the user does not specify a doc...
+		# creates plot
+		create_plot(props, inp)
+
+		# displays plot if requested
+		if args['p']:
+			display_plot('./figures/posize_' + inp + '.png')
+
+		# updates document info doc
+		update_doc(inp, props)
+
+	# else if the user specifies "each"...
+	elif (inp == "each"):
+		# gets the list of documents
+		docs = [x[0] for x in os.walk("./documents/")][1:]
+		docs = [x.split('/')[-1] for x in docs]
+
+		# for each document...
+		for doc in docs:
+			# performs the calculations on only that document
+			counts, props = vis_pos(doc, nlp)
+
+			# creates plot
+			create_plot(props, doc)
+
+			# updates document info doc
+			update_doc(doc, props)
+
+		# displays plots if requested
+		if args['p']:
+			display_plots()
+
+	# else if the user specifies "full"...
 	elif (inp == "full"):
 		# performs the calculations over all documents
 		counts, props = vis_pos_all(nlp)
 
+		# creates plot
+		create_plot(props, inp)
+
+		# displays plot if requested
+		if args['p']:
+			display_plot('./figures/posize_' + inp + '.png')
+
+		# updates document info doc
+		update_doc(inp, props)
+
 	# else, throws an error
 	else:
-		print("ERROR")
+		print("Invalid input.")
 
-	# creates a plot for the data
-	sort = {k: v for k, v in sorted(props.items(), key=lambda item: item[1], reverse=True)}
-	labels = sort.keys()
-	sizes = sort.values()
+	
 
-	fig1, ax1 = plt.subplots()
-	ax1.pie(sizes, labels=[str(round(x * 100)) + "%" for x in sizes], labeldistance=1.05)
-	ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-	ax1.legend(labels, loc = "upper right", fontsize=5) 
-
-	# creates the plot title
-	if (inp == "full"):
-		plt.title("Relative percentages of each POS in all documents")
-	else:
-		plt.title("Relative percentages of each POS in \n" + inp)
-
-	# saves the plot
-	plt.savefig('./figures/posize_' + inp + '.png')
-
-	# if requested, shows the plot
-	if (args["p"]):
-		plt.show(block=True)
-
-	# clears the plot
-	plt.clf()
+	
 
 

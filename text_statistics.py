@@ -34,21 +34,7 @@ def syllables(word):
     return syllables
 
 
-def statisticize(doc, sc):
-    # creates the path to the correct folder
-    folder_path = "./texts/" + doc
-    pgs = info_dict[doc]["pgs"]
-
-    text_grl = ""
-
-    # creates general text for analysis
-    for i in range(pgs):
-        text = open(folder_path + "/content_" + str(i + 1) + ".txt", "r")
-        text = text.read()
-        text = text.strip()
-        text_grl = text_grl + text + ". "
-
-    text = text_grl
+def statisticize(text, sc):
     features = {}
 
     # adjust text in various ways
@@ -80,7 +66,6 @@ def statisticize(doc, sc):
         if re.search('\w+', word):
             wordsA.append(re.sub(r'\W+', '', word))
     words = wordsA
-    print(words)
 
     num_words = len(words)
     features['words'] = num_words
@@ -155,6 +140,20 @@ def plot(stats_dict, headers):
     )])
     fig.show()
 
+def update_doc(dic):
+    # opens the document_info.txt file and reads contents
+    contents = None
+    with open("document_info.txt", "r") as jsonFile:
+        contents = json.load(jsonFile)
+
+    # for each document...
+    for doc in dic:
+        # updates the stats
+        contents[doc]['stats'] = dic[doc]
+
+    # updates document
+    with open("document_info.txt", "w") as jsonFile:
+        json.dump(contents, jsonFile)
 
 if __name__ == '__main__':
 
@@ -174,15 +173,31 @@ if __name__ == '__main__':
     sc = args["s"]
     headers = None
 
-    # if document name specified, statisticize document
+    # if document name specified, statisticizes document
     if doc != "full":
         stats_dict = {}
-        temp = statisticize(doc, sc)
+
+        # creates the path to the correct folder
+        folder_path = "./texts/" + doc
+        pgs = info_dict[doc]["pgs"]
+
+        text_grl = ""
+
+        # creates general text for analysis
+        for i in range(pgs):
+            text = open(folder_path + "/content_" + str(i + 1) + ".txt", "r")
+            text = text.read()
+            text = text.strip()
+            text_grl = text_grl + text + ". "
+
+        # pulls metrics from text
+        temp = statisticize(text_grl, sc)
+
         temp['doc'] = doc
         stats_dict[doc] = temp
         headers = stats_dict[doc].keys()
 
-    # else, statisticize all documents
+    # else, statisticizes all documents
     else:
         stats_dict = {}
 
@@ -192,8 +207,22 @@ if __name__ == '__main__':
 
         # for each document...
         for doc in docs:
-            # statisticizes it
-            temp = statisticize(doc, sc)
+            # creates the path to the correct folder
+            folder_path = "./texts/" + doc
+            pgs = info_dict[doc]["pgs"]
+
+            text_grl = ""
+
+            # creates general text for analysis
+            for i in range(pgs):
+                text = open(folder_path + "/content_" + str(i + 1) + ".txt", "r")
+                text = text.read()
+                text = text.strip()
+                text_grl = text_grl + text + ". "
+
+            # pulls metrics from text
+            temp = statisticize(text_grl, sc)
+
             temp['doc'] = doc
             stats_dict[doc] = temp
 
@@ -206,5 +235,9 @@ if __name__ == '__main__':
     # reorganizes the 'document' header
     headers.insert(0, headers.pop(headers.index('doc')))
 
+    print(stats_dict)
+    # updates document info doc
+    update_doc(stats_dict)
+
     # plots the results
-    plot(stats_dict, list(headers))
+    #plot(stats_dict, list(headers))

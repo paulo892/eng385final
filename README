@@ -42,6 +42,7 @@ Installation (MacOS):
  	- Output:
  		- If pie charts requested, a grid of pie charts displaying percentages of POS in each textualized document
  		- If dependency graph requested, a dependency graph accessible at 'localhost:5000' (Use your browser to go to that address!)
+ 			- Press "Ctrl-C" to exit out of this process in the terminal window
 
  - statisticize.py
  	- Use: Calculate and display various kinds of statistics for one or all of the documents
