@@ -159,7 +159,7 @@ if __name__ == '__main__':
 
     # establishes the argument scheme
     ap = argparse.ArgumentParser()
-    ap.add_argument("-d", "--document", required=True, help="name of book folder to be OCR'd; 'full' if all")
+    ap.add_argument("-d", "--document", required=True, help="name of book folder to be OCR'd; 'each' if all")
     ap.add_argument('-s', action='store_true', default=False, help="include if semi-colons should be considered sentence-terminating punctuation")
     args = vars(ap.parse_args())
 
@@ -174,7 +174,7 @@ if __name__ == '__main__':
     headers = None
 
     # if document name specified, statisticizes document
-    if doc != "full":
+    if doc != "each":
         stats_dict = {}
 
         # creates the path to the correct folder
@@ -240,4 +240,4 @@ if __name__ == '__main__':
     update_doc(stats_dict)
 
     # plots the results
-    #plot(stats_dict, list(headers))
+    plot(stats_dict, list(headers))

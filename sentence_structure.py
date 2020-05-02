@@ -36,6 +36,7 @@ if __name__ == '__main__':
 	doc = nlp(text)
 
 	# displays the dependencies
+	doc.user_data["title"] = "Sentence structures for " + doc
 	displacy.serve(doc, style="dep")
 
 

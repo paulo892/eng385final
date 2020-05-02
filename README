@@ -14,45 +14,49 @@ Installation (MacOS):
  Usage:
  - Adding books:
  	- To add a book, create an image for each page of the book and add these images to the "./documents/" directory in a folder labeled with the name of the book
- 	- Add the metadata for the book to the "document_info.txt"; this includes the number of "content" pages (i.e. pages with relevant text) and a mapping describing the letters on each page
+ 	- Add the metadata for the book to the "document_info.txt"; this includes the number of "content" pages (i.e. pages with relevant text), the publication year, and a mapping describing the letters on each page (Use the existing entries as a model)
  	- Rename each of the pages for the book to "content_<an incrementing count>"; you should be left with, at least, a set of pages of the format "content_1," "content_2," etc., with the number incrementing based on the order of the pages
+ 	- Create a folder with the name of the text under the "./figures/" and "./texts/" directories
 
  - textualize.py:
- 	- Use: Use models to extract an approximation of the text from some or all of the saved books.
+ 	- Use: Use models to extract an approximation of the text from some or all of the saved books
  	- Process:
  		- Enter virtual environment
- 		- Run "python textualize.py -d <the name of the folder of the children's book to textualize; "full" if all books in the "./documents" directory are to be newly textualized>"
-	- Output: Textualized document created in "./text" directory, and text printed to console.
+ 		- Run "python textualize.py -d <the name of the folder of the children's book to textualize; "full" if all books to be textualized>"
+	- Output: Textualized document created in "./texts/" directory, and text printed to console
+	- Note: Textualizing a text is necessary for most of the other scripts to be applied to it; it is recommended that this be done for all of the texts of interest before further processing
 
- - posize.py:
- 	- Use: Tag a candidate text with an estimation of its parts of speech, and create visualizations of that data.
+ - parts_of_speech.py:
+ 	- Use: Tag a candidate text or texts with an estimation of their parts of speech, and visualize that data
  	- Note: For a document to be posized, it must first have been textualized!
  	- Process:
  		- Enter virtual environment
- 		- Run "python posize.py -p [if you would like the resultant diagram to be displayed] -d <the name of the folder of the children's book to posize; "full" if all books in the "./documents" directory are to be newly posized>"
- 	- Output: Various statistics (i.e. POS counts, proportions) printed to console, figure saved to "./figures" directory
+ 		- Run "python parts_of_speech.py -p [if you would like the diagrams to be displayed] -d <the name of the folder of the children's book to posize; "full" if all books to be newly posized>"
+ 			- -d <"full"> will aggregate the parts of speech over all available texts
+ 			- -d <"each"> will aggregate the parts of speech over each available text (and create a visualization for each)
+ 			- Visualization: A pie chart showing the distribution of parts of speech within the text
+ 	- Output: Various statistics (i.e. POS counts, proportions) printed to console, figures saved to "./figures/" directory ("./figures/<document>/posize_<document>.png")
 
- - display.py:
- 	- Use: Display various kinds of figures and visualizations of the data
- 	- Note: To display the POS pie chart for a document, you must have already run posize.py on that document
- 	- Note: To display the dependency diagram for a document, you must have already run textualize.py on that document
+ - sentence_structure.py:
+ 	- Use: Visualize the sentence structure of each page in a candidate text
  	- Process:
  		- Enter virtual environment
- 		- Run "python display.py -t <kind of display: "figures" - all pie charts, "deps" - dependency diagram for one document> -d <if -t = "deps", the name of the document for which to display dependencies>"
+ 		- Run "python sentence_structure.py -d <the name of the document for which to display dependencies>"
  	- Output:
- 		- If pie charts requested, a grid of pie charts displaying percentages of POS in each textualized document
- 		- If dependency graph requested, a dependency graph accessible at 'localhost:5000' (Use your browser to go to that address!)
- 			- Press "Ctrl-C" to exit out of this process in the terminal window
+ 		- A dependency graph accessible at 'localhost:5000' (Use your browser to go to that address!)
+ 			- Press "Ctrl-C" to exit out of this process in the terminal window when finished
+ 			- Note: No visualizations are saved in this module due to technical limitations, but the user can screenshot the sentence structure in the browser if they would like!
 
- - statisticize.py
- 	- Use: Calculate and display various kinds of statistics for one or all of the documents
- 	- Note: To display the statistics for a document, you must have already run textualize.py on that document
+ - text_statistics.py
+ 	- Use: Calculate and display various metrics for one or all of the texts
  	- Process:
  		- Enter virtual environment
- 		- Run "python statisticize.py -s [if you'd like to consider semi-colons a sentence-terminating punctuation mark] -d <the name of the folder of the children's book to statisticize; "full" if all books in the "./documents" directory are to be newly statisticized>"
+ 		- Run "python text_statistics.py -s [if you'd like to consider semi-colons a sentence-terminating punctuation mark] -d <the name of the folder of the book to calculate metrics for; "each" if all books to be subject to calculations>"
+ 			-d <"each"> will calculate and display metrics for each available text
  	- Output:
  		- A table displaying the relevant metrics automatically launched in the user's default internet browser
- 	- Note (Metrics Displayed):
+ 			- Note: No visualizations are saved in this module due to technical limitations, but the user can screenshot the metrics in the browser if they would like!
+ 	- Metrics Displayed:
  		- 'sentences' - number of sentences in the text (approx. [complicated by lack of punctuation in certain cases])
  		- 'words' - number of words in the text (approx.)
  		- 'syllables' - number of syllables in the text (approx.)
@@ -62,5 +66,41 @@ Installation (MacOS):
  		- 'flesh-adap' - flesch reading ease index (readability index)
  		- 'coleman' - Coleman-Liau index (readability index)
  		- 'flesch-grade' - Flesch-Kincaid grade level (readability index)
+ 			- Loosely corresponds to a specific grade level!
  		- 'ari' - Automated Readability Index (readability index)
  		- 'alw' - average letters per word
+ - pos_word_cloud.py
+ 	- Use: Create a word cloud for one or more available texts
+ 	- Process:
+ 		- Enter virtual environment
+ 		- Run "pos_word_cloud.py -d <the name of the book to cloud> -p [if you would like the diagrams to be displayed] -t <part of speech to be clouded: NOUN, ADJ, or VERB>"
+ 			-d <"each"> will create a word cloud for each available text
+ 			-d <"full"> will aggregate the texts into one before creating a single, general word cloud
+ 			-t <"NOUN"> will create a word cloud for nouns
+ 			-t <"VERB"> will create a word cloud for verbs
+ 			-t <"ADJ"> will create a word cloud for adjectives
+ 	- Output:
+ 		- A word cloud (or multiple), as well as that same word cloud (or clouds) saved to "./figures/" directory ("./figures/<document>/pos_word_cloud_<POS>.png")
+ - colors_across_text.py
+ 	- Use: Create a pie chart displaying the most common colors on each page of a text
+ 	- Process:
+ 		- Enter virtual environment
+ 		- Run "colors_across_text.py -d <the name of the book to get colors from> -p [if you would like the diagrams to be displayed] -c <number of colors to track per page>"
+	- Output:
+		- A pie chart for each page of the text, saved to the "./figures" directory ("./figures/<document>/colors_across_text_<page>.png")
+ - difficulties_across_text.py
+ 	- Use: Graph the various metrics from "text_statistics.py" for each page of a text
+ 	- Process:
+ 		- Enter virtual environment
+ 		- Run "difficulties_across_text.py -d <the name of the book to process> -p [if you would like the diagrams to be displayed] -s [if you'd like to consider semi-colons a sentence-terminating punctuation mark]"
+	- Output:
+		- A plot for each individual metric calculated in "text_statistics.py," saved in the "./figures/" directory ("./figures/<document>/difficulties_across_text_<metric>.png")
+ - difficulties_across_time.py
+ 	- Use: Graph the various metrics from "text_statistics.py" for each text, ordered by publication date and averaged within years
+ 	- Process:
+ 		- Enter virtual environment
+ 		- Run "difficulties_across_time.py -t <metric (from text_statistics.py)> -p [if you would like the diagrams to be displayed] -s [if you'd like to consider semi-colons a sentence-terminating punctuation mark]"
+	- Output:
+		- A plot for each individual metric calculated in "text_statistics.py," saved in the "./figures/" directory ("./figures/full/difficulties_across_time_<metric>.png")
+
+

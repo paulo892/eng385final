@@ -50,7 +50,6 @@ if __name__ == '__main__':
 	# establishes the argument scheme
 	ap = argparse.ArgumentParser()
 	ap.add_argument("-d", "--document", required=True, help="name of book folder to be OCR'd; 'full' if all")
-	ap.add_argument("-p", "--preprocess", type=str, default="thresh", help="type of preprocessing to be done")
 	args = vars(ap.parse_args())
 
 	# opens the document info text file
