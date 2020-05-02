@@ -17,6 +17,9 @@ Installation (MacOS):
  	- Add the metadata for the book to the "document_info.txt"; this includes the number of "content" pages (i.e. pages with relevant text), the publication year, and a mapping describing the letters on each page (Use the existing entries as a model)
  	- Rename each of the pages for the book to "content_<an incrementing count>"; you should be left with, at least, a set of pages of the format "content_1," "content_2," etc., with the number incrementing based on the order of the pages
  	- Create a folder with the name of the text under the "./figures/" and "./texts/" directories
+ - Notes on documentation:
+ 	- Items below in <angle brackets> mean that they (as well as the angle brackets) should be replaced with the relevant text
+ 	- Items below in [regular brackets] need no text; the flag (i.e. "-p") should be included if the user desires the value to be true (i.e. the plot should be shown, in the case prior)
 
  - textualize.py:
  	- Use: Use models to extract an approximation of the text from some or all of the saved books
